@@ -9,9 +9,11 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "husky",
-    "shadcn": "npx shadcn@latest"
+    "shadcn": "npx shadcn@latest",
+    "optimize:images": "node scripts/optimize-images.mjs"
   },
   "dependencies": {
+    "@img/sharp-darwin-arm64": "0.33.4",
     "@next/third-parties": "^15.5.2",
     "@radix-ui/react-slot": "^1.1.0",
     "animate.css": "^4.1.1",
