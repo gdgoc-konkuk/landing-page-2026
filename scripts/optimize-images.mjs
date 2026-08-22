@@ -18,41 +18,59 @@ async function* walk(dir) {
 }
 
 let before = 0, after = 0, touched = 0;
+const failed = [];
 
 for await (const file of walk(ROOT)) {
   if (!/\.(webp|png|jpe?g)$/i.test(file)) continue;
-  const { size: sizeBefore } = await stat(file);
-  before += sizeBefore;
-
-  const img = sharp(file, { failOn: 'none' });
-  const meta = await img.metadata();
-  const width = meta.width && meta.width > MAX_WIDTH ? MAX_WIDTH : undefined;
 
   const tmp = `${file}.tmp.webp`;
-  await sharp(file, { failOn: 'none' })
-    .resize({ width, withoutEnlargement: true })
-    .webp({ quality: QUALITY, effort: 6 })
-    .toFile(tmp);
+  try {
+    const { size: sizeBefore } = await stat(file);
+    before += sizeBefore;
 
-  const { size: sizeAfter } = await stat(tmp);
+    const img = sharp(file, { failOn: 'none' });
+    const meta = await img.metadata();
+    const width = meta.width && meta.width > MAX_WIDTH ? MAX_WIDTH : undefined;
 
-  if (sizeAfter < sizeBefore) {
-    const target = file.replace(/\.(png|jpe?g)$/i, '.webp');
-    if (target !== file) await unlink(file);
-    await rename(tmp, target);
-    after += sizeAfter;
-    touched++;
-    const flag = sizeAfter > TARGET_MAX_BYTES ? '  ⚠ 300KB 초과' : '';
-    console.log(
-      `${target}  ${(sizeBefore / 1024).toFixed(0)}KB → ${(sizeAfter / 1024).toFixed(0)}KB${flag}`
-    );
-  } else {
-    await unlink(tmp);
-    after += sizeBefore;
-    console.log(`${file}  변화 없음 (건너뜀)`);
+    await sharp(file, { failOn: 'none' })
+      .resize({ width, withoutEnlargement: true })
+      .webp({ quality: QUALITY, effort: 6 })
+      .toFile(tmp);
+
+    const { size: sizeAfter } = await stat(tmp);
+
+    if (sizeAfter < sizeBefore) {
+      const target = file.replace(/\.(png|jpe?g)$/i, '.webp');
+      if (target !== file) await unlink(file);
+      await rename(tmp, target);
+      after += sizeAfter;
+      touched++;
+      const flag = sizeAfter > TARGET_MAX_BYTES ? '  ⚠ 300KB 초과' : '';
+      console.log(
+        `${target}  ${(sizeBefore / 1024).toFixed(0)}KB → ${(sizeAfter / 1024).toFixed(0)}KB${flag}`
+      );
+    } else {
+      await unlink(tmp);
+      after += sizeBefore;
+      console.log(`${file}  변화 없음 (건너뜀, 재압축이 더 큼)`);
+    }
+  } catch (err) {
+    await unlink(tmp).catch(() => {});
+    failed.push({ file, error: err.message });
+    console.error(`${file}  실패: ${err.message}`);
   }
 }
 
 console.log(
   `\n합계: ${(before / 1024 / 1024).toFixed(1)}MB → ${(after / 1024 / 1024).toFixed(1)}MB  (${touched}개 변환)`
 );
+
+if (failed.length > 0) {
+  console.error(`\n실패한 파일 ${failed.length}개:`);
+  for (const { file, error } of failed) {
+    console.error(`  - ${file}: ${error}`);
+  }
+  process.exitCode = 1;
+} else {
+  console.log('실패한 파일 없음');
+}
