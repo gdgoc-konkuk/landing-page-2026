@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # node --test로 .ts를 직접 실행하려면 네이티브 TS 지원이 필요하다
+          node-version: '24'
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - name: 타입 체크
+        run: yarn typecheck
+
+      - name: 린트
+        run: yarn lint
+
+      - name: 단위 테스트
+        run: yarn test
+
+      - name: 토큰 게이트
+        run: yarn check:tokens
+
+      - name: 빌드
+        run: yarn build
+        env:
+          NEXT_PUBLIC_GA_ID: ${{ secrets.NEXT_PUBLIC_GA_ID }}
+
+      # 빌드 산출물에 토큰이 실제로 emit됐는지. Tailwind가 관찰되지 않은
+      # 테마 변수를 pruning해 stage 배경이 투명해진 사고를 막는 게이트다.
+      - name: 토큰 emit 게이트
+        run: yarn check:tokens:emitted

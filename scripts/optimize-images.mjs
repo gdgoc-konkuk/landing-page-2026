@@ -1,5 +1,12 @@
 // 원본을 제자리에서 재인코딩한다. next/image가 AVIF/WebP 변환과 srcset을
 // 담당하므로 원본은 "적정 해상도의 고품질 1본"만 유지하면 된다.
+//
+// sharp는 devDependencies에만 있다 — 이 스크립트를 실행하는 개발자 도구용이며
+// 런타임(Vercel)에는 필요 없다. yarn 1(classic)의 optional-dependency 처리가
+// 신뢰할 수 없어 sharp의 네이티브 플랫폼 바이너리가 깨진 상태로 설치될 수 있다.
+// 이 경우에도 `@img/sharp-*` 플랫폼 패키지를 package.json에 직접 추가하지 말 것 —
+// Task 1에서 Critical 이슈로 되돌려진 조치다. 필요하면 `yarn install`을 재시도하거나
+// 로컬 sharp 설치를 정리 후 재설치한다.
 import sharp from 'sharp';
 import { readdir, stat, rename, unlink } from 'node:fs/promises';
 import path from 'node:path';
