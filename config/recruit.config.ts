@@ -16,6 +16,6 @@ export interface RecruitConfig {
 export const RECRUIT: RecruitConfig = {
   closesAt: '2026-09-04T23:59:59+09:00',
   closingWindowDays: 7,
-  applyUrl: 'https://forms.gle/FafiUro9V6uw4tgq9',
+  applyUrl: 'https://forms.gle/Hf1em1z8pZkzdgTT6',
   cohort: '26-27기',
 };
