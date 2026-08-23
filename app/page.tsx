@@ -13,8 +13,10 @@ import {
   formatDeadline,
 } from '@/lib/recruit';
 
-// 상태 판정이 빌드 시점에 굳지 않도록 하루에 한 번 재생성한다.
-export const revalidate = 86400;
+// 상태 판정이 빌드 시점에 굳지 않도록 주기적으로 재생성한다.
+// 모집 기간에는 1시간이다. 하루로 두면 마감 당일에 이미 닫혔는데도
+// "마감까지 1일"이 최대 하루 동안 남아 있을 수 있다.
+export const revalidate = 3600;
 
 export default function Home() {
   const now = new Date();
