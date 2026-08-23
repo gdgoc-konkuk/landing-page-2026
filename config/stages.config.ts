@@ -45,7 +45,7 @@ export interface StageData {
 export const STAGES: StageData[] = [
   {
     slug: 'study',
-    image: '/images/study/study-blog.jpeg',
+    image: '/images/study/blog.webp',
     scale: 'md',
     title: 'Study',
     description:
@@ -56,33 +56,33 @@ export const STAGES: StageData[] = [
       {
         title: 'JavaScript Deep Dive',
         description: 'JavaScript Deep Dive를 함께 읽고 토론하며, 웹 개발의 기반이 되는 JavaScript의 동작 원리와 핵심 개념을 깊이 있게 살펴보았습니다.',
-        imageUrl: '/images/study/study-deep-dive.jpeg',
+        imageUrl: '/images/study/deep-dive.webp',
       },
       {
         title: '만들어요 나만의 블로그',
         description: '나만의 기술 블로그를 직접 기획하고 개발하며, 하나의 웹 서비스를 처음부터 끝까지 만들어보았습니다.',
-        imageUrl: '/images/study/study-blog.jpeg',
+        imageUrl: '/images/study/blog.webp',
       },
       {
         title: '대규모 시스템 설계',
         description: '대규모 트래픽을 처리하는 시스템의 설계 방식과 기술을 함께 공부하고, 각자의 프로젝트에 적용하며 아키텍처 설계 역량을 키웠습니다.',
-        imageUrl: '/images/study/study-system.png',
+        imageUrl: '/images/study/system-design.webp',
       },
       {
         title: '딥러닝 학당',
         description: '딥러닝 논문을 함께 읽고 분석하며, 복잡한 모델과 연구의 구조를 이해하고 논문을 읽는 방법을 익혔습니다.',
-        imageUrl: '/images/study/study-deep-learning.jpeg',
+        imageUrl: '/images/study/deep-learning.webp',
       },
       {
         title: 'KU버네티스 공식문서 스터디',
         description: '쿠버네티스 공식 문서를 함께 읽고 발표하며, 쿠버네티스의 핵심 개념과 동작 방식을 체계적으로 공부했습니다.',
-        imageUrl: '/images/study/study-k8s.jpeg',
+        imageUrl: '/images/study/k8s.webp',
       },
     ],
   },
   {
     slug: 'techtalk',
-    image: '/images/activity/activity-session.jpeg',
+    image: '/images/techtalk/session.webp',
     scale: 'lg',
     title: 'Tech Talk\n& Hands-on',
     description:
@@ -92,7 +92,7 @@ export const STAGES: StageData[] = [
   },
   {
     slug: 'solution',
-    image: '/images/activity/activity-solution-challenge.webp',
+    image: '/images/solution/challenge.webp',
     scale: 'lg',
     title: 'Solution Challenge',
     description:
@@ -103,7 +103,7 @@ export const STAGES: StageData[] = [
       {
         title: 'Atempo',
         description: '2025년 Most Social Impact Award(TOP 3)에 선정되었습니다.',
-        imageUrl: '/images/solution/attempo.webp',
+        imageUrl: '/images/solution/atempo.webp',
         href: 'https://github.com/gdgoc-konkuk/24-25-proj-Atempo-Client',
       },
       {
@@ -122,7 +122,7 @@ export const STAGES: StageData[] = [
   },
   {
     slug: 'kprintf',
-    image: '/images/kprintf/kprintf2026-2.jpeg',
+    image: '/images/kprintf/2026-speaker.webp',
     scale: 'xl',
     title: 'Kprintf',
     description:
@@ -133,27 +133,27 @@ export const STAGES: StageData[] = [
       {
         title: 'Kprintf 2026',
         description: '현업 개발자와 함께하는 교류',
-        imageUrl: '/images/kprintf/kprintf2026.jpeg',
+        imageUrl: '/images/kprintf/2026-hall.webp',
       },
       {
         title: 'Kprintf 2025',
         description: '200여명의 학생 개발자들이 함께한 뜻깊은 시간',
-        imageUrl: '/images/kprintf/kprintf2.webp',
+        imageUrl: '/images/kprintf/2025.webp',
       },
       {
         title: 'Kprintf 2024',
         description: '건국대학교에서 개최된 첫 번째 테크 컨퍼런스',
-        imageUrl: '/images/kprintf/kprintf1.webp',
+        imageUrl: '/images/kprintf/2024.webp',
       },
       {
         title: '다양한 기술 세션',
         description: '최신 기술 트렌드와 개발 경험 공유',
-        imageUrl: '/images/kprintf/kprintf3.webp',
+        imageUrl: '/images/kprintf/sessions.webp',
       },
       {
         title: '연사자분들과 커피챗',
         description: '선배 개발자와의 네트워킹 기회',
-        imageUrl: '/images/kprintf/kprintf4.webp',
+        imageUrl: '/images/kprintf/coffee-chat.webp',
       },
     ],
   },
