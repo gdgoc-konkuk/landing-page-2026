@@ -46,5 +46,5 @@ export function isRecruiting(state: RecruitState): boolean {
 /** 마감 안내 문구. 0일은 "오늘 마감"으로 표현한다 — "0일 남음"은 틀린 말처럼 읽힌다. */
 export function formatDeadline(days: number | null): string | null {
   if (days === null) return null;
-  return days === 0 ? '오늘 마감' : `모집 마감까지 ${days}일`;
+  return days === 0 ? '오늘 모집 마감' : `모집 마감까지 ${days}일`;
 }

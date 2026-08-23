@@ -33,7 +33,7 @@ export default function Home() {
           <Stage key={stage.slug} data={stage} index={i} />
         ))}
       </main>
-      <Footer state={state} />
+      <Footer />
       <RecruitToolbar state={state} deadline={formatDeadline(left)} />
     </>
   );
