@@ -4,6 +4,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  # 커밋 없이 배포를 다시 시도할 수 있게. `gh workflow run CI`
+  workflow_dispatch:
 
 jobs:
   verify:
