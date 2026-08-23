@@ -1,6 +1,122 @@
+/* Hallmark · macrostructure: Split Studio · genre: playful · tone: M3 Expressive community · anchor hue: 155
+ * carousel: fluid-ratio Multi-browse · floating CTA: pill + Extended FAB · nav: N6 · footer: Ft5
+ * hero: four-step per-letter bracket ticker (legacy preserved) · pre-emit critique: P5 H5 E5 S5 R5 V5
+ * contrast: pass (40–41) · slop: pass (42–45) · honest: pass (46) · chrome: pass (47)
+ * tokens: pass (48) · responsive: pass (49) · icons: pass (30) · mobile: pass (34, 49, 50–57)
+ */
 @import 'tailwindcss';
+@import '../tokens.css';
 
-/* 토큰은 Task 4에서 @theme 블록으로 정의한다. */
+/* `static`은 선택이 아니라 필수다.
+   Tailwind v4는 기본적으로 "코드에서 리터럴로 관찰된" 테마 변수만 emit한다.
+   Shape.tsx가 `var(--color-${color})`로 이름을 런타임에 조립하므로 브랜드 색
+   이름들이 소스에 리터럴로 나타나지 않는다. static이 없으면 스캐너가 그것들을
+   pruning하고(이전에 실제로 발생했다 — 6개가 사라졌다), 정의되지 않은 var()는
+   invalid at computed-value time이 되어 배경이 조용히 투명해진다.
+   빼지 말 것 — scripts/check-tokens.ts --emitted가 이 조건을 검사한다. */
+@theme static {
+  /* 기본 팔레트를 비운다 — 브랜드 시스템만 쓴다 */
+  --color-*: initial;
+
+  /* ── 폰트 ──
+     Task 3에서 Branch A로 확정됨: next/font/google이 Google_Sans_Flex를 export하며
+     layout.tsx가 --font-google-sans 변수를 이미 노출한다.
+     따라서 리터럴 문자열이 아니라 변수를 참조한다. */
+  --font-display: var(--font-google-sans), var(--font-pretendard), sans-serif;
+  --font-body: var(--font-google-sans), var(--font-pretendard), sans-serif;
+
+  /* ── accent: 건국대 다크그린 #00703E. CTA/focus/active 전용, 점유 5% 이하 ── */
+  --color-accent: oklch(47.9% 0.119 155);
+  --color-accent-ink: oklch(97% 0.008 155); /* paper와 동일. 순수 #fff 금지 */
+  --color-focus: oklch(52% 0.12 155);
+
+  /* ── 표면 / 텍스트 ── */
+  --color-paper: oklch(97% 0.008 155);
+  --color-paper-2: oklch(94% 0.01 155);
+  --color-paper-3: oklch(91% 0.012 155);
+  --color-ink: oklch(20% 0.012 155);
+  --color-ink-2: oklch(42% 0.012 155);
+  --color-muted: oklch(52% 0.012 155);
+  --color-rule: oklch(80% 0.012 155);
+  --color-rule-2: oklch(86% 0.01 155);
+
+  /* ── M3 semantic roles ──
+     새 색을 만든 것이 아니라 위에서 검증한 팔레트를 공식 역할 이름에 매핑한다. */
+  --color-primary: oklch(47.9% 0.119 155);
+  --color-on-primary: oklch(97% 0.008 155);
+  --color-secondary: oklch(63% 0.18 260);
+  --color-on-secondary: oklch(20% 0.012 155);
+  --color-secondary-container: oklch(90.923% 0.035592 147.872);
+  --color-on-secondary-container: oklch(21.935% 0.033772 153.53);
+  --color-tertiary: oklch(79.6% 0.167 76);
+  --color-on-tertiary: oklch(20% 0.012 155);
+  --color-surface: oklch(97% 0.008 155);
+  --color-surface-container-low: oklch(94% 0.01 155);
+  --color-surface-container: oklch(91% 0.012 155);
+  --color-surface-container-high: oklch(91% 0.012 155);
+  --color-on-surface: oklch(20% 0.012 155);
+  --color-on-surface-variant: oklch(42% 0.012 155);
+  --color-outline: oklch(80% 0.012 155);
+  --color-outline-variant: oklch(86% 0.01 155);
+
+  /* ── GDG 브랜드 4색. 채도를 그대로 쓴다 ──
+     이전 버전은 이 값들을 채도 0.03 틴트로 깎았고 결과는 베이지였다.
+     브랜드 색의 17%만 남긴 셈이라 M3 Expressive가 전혀 읽히지 않았다.
+     이제 원본 채도로 shape 컨테이너를 꽉 채운다.
+
+     텍스트 규칙은 측정에서 나왔다 (WCAG 2.x):
+       KU green   흰 글자 5.94:1 ✓  → accent-ink
+       GDG blue   흰 글자 3.41 ✗ / 검은 글자 5.26 ✓
+       GDG red    흰 글자 3.76 ✗ / 검은 글자 4.77 ✓
+       GDG yellow 흰 글자 1.85 ✗ / 검은 글자 9.68 ✓
+       GDG green  흰 글자 2.93 ✗ / 검은 글자 6.13 ✓
+     → 학교색은 흰 글자, GDG 4색은 검은 글자(--color-ink). 예외 없음. */
+  --color-brand-blue: oklch(63% 0.18 260); /* #4285f4 */
+  --color-brand-red: oklch(62.6% 0.2 29); /* #ea4335, 채도 상한 0.20 */
+  --color-brand-yellow: oklch(79.6% 0.167 76); /* #f9ab00 */
+  --color-brand-green: oklch(64.8% 0.16 148); /* #34a853 */
+
+  /* ── M3 shape scale ──
+     Material Web 토큰 v34.0.21의 md.sys.shape.corner.* 를 그대로 옮긴 값이다.
+     lib/m3.ts의 SHAPE와 한 쌍이고 lib/m3.test.ts가 둘의 일치를 검사한다.
+     눈대중으로 값을 넣지 말 것 — 이전에 스펙에 없는 36px이 여기 있었다. */
+  --radius-none: 0px;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-lg-increased: 20px;
+  --radius-xl: 28px;
+  --radius-xl-increased: 32px;
+  --radius-xxl: 48px;
+  --radius-full: 9999px;
+
+  /* ── M3 이징 (md.sys.motion.easing.*, v34.0.21) ──
+     --ease-out은 M3의 standard와 같은 값이었다. --ease-in-out에 있던
+     cubic-bezier(0.4, 0, 0.2, 1)은 M3의 legacy(=M2 곡선)이므로 이름을 바로잡고
+     standard 계열을 함께 넣는다. */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --ease-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --ease-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --ease-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-legacy: cubic-bezier(0.4, 0, 0.2, 1);
+  /* 기존 이름 유지 — 여러 곳에서 var(--ease-out)을 참조한다 */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ── 타입 스케일 ──
+     이전 버전은 display 5.5rem / display-s 4rem으로 1.375배 차이였다.
+     두 토큰이 사실상 같은 크기여서 사다리가 없었고, 그 아래는 1.125rem으로 절벽이었다.
+     Expressive의 정체성은 극단적 스케일 도약이므로 실제 간격을 만든다. */
+  --text-display-xl: clamp(3.25rem, 11vw, 8rem); /* 히어로 슬로건 */
+  --text-display: clamp(
+    2.25rem,
+    6vw,
+    4.5rem
+  ); /* 섹션 헤드 — xl의 1.78배 아래 */
+  --text-lede: clamp(1.125rem, 1.6vw, 1.375rem); /* display의 3.27배 아래 */
+  --text-meta: 0.8125rem;
+}
 
 @layer base {
   html,
@@ -18,5 +134,206 @@
   html,
   body {
     overflow-x: clip;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+  }
+
+  /* display: 굵기 하나 + 좁은 자간. line-height 1.2 금지 */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    /* 긴 한국어/영어 단어가 좁은 폭에서 넘치는 것을 막는다 */
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+
+  /* nav가 fixed라서 앵커로 이동하면 대상이 nav 밑에 깔린다.
+     :target은 프래그먼트가 가리키는 요소에만 적용되므로 앵커 대상 전부를
+     한 줄로 덮는다. nav 높이(약 4.5rem) + 여유. */
+  :target {
+    scroll-margin-top: 5.5rem;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
+    /* 등장을 애니메이트하지 않는다 — 즉시 표시 */
+    transition: none;
+  }
+}
+
+@layer components {
+  /* Figma Typography의 고정 role을 breakpoint에서 교체한다. 값 사이를 보간하지 않는다. */
+  .m3-display-emphasized {
+    font-family: var(--font-display);
+    font-size: var(--type-display-medium-size);
+    line-height: var(--type-display-medium-line);
+    font-weight: var(--type-weight-emphasis);
+    letter-spacing: -0.02em;
+  }
+
+  .m3-headline-emphasized {
+    font-family: var(--font-display);
+    font-size: var(--type-headline-medium-size);
+    line-height: var(--type-headline-medium-line);
+    font-weight: var(--type-weight-emphasis);
+    letter-spacing: -0.015em;
+  }
+
+  .m3-section-title {
+    font-family: var(--font-display);
+    font-size: var(--type-display-small-size);
+    line-height: var(--type-display-small-line);
+    font-weight: var(--type-weight-emphasis);
+    letter-spacing: -0.02em;
+  }
+
+  .m3-body-large {
+    font-size: var(--type-body-large-size);
+    line-height: var(--type-body-large-line);
+    font-weight: var(--type-weight-baseline);
+    letter-spacing: 0;
+  }
+
+  .m3-body-medium {
+    font-size: var(--type-body-medium-size);
+    line-height: var(--type-body-medium-line);
+    font-weight: var(--type-weight-baseline);
+    letter-spacing: 0;
+  }
+
+  .m3-title-medium {
+    font-size: var(--type-title-medium-size);
+    line-height: var(--type-title-medium-line);
+    font-weight: var(--type-weight-emphasis);
+    letter-spacing: 0;
+  }
+
+  .m3-label-large {
+    font-size: var(--type-label-large-size);
+    line-height: var(--type-label-large-line);
+    font-weight: var(--type-weight-emphasis);
+    letter-spacing: 0;
+  }
+
+  .recruit-toolbar-pill,
+  .recruit-toolbar-fab > a {
+    box-shadow: var(--elevation-floating-bar);
+  }
+
+  .m3-button {
+    box-shadow: none;
+    transition: box-shadow var(--dur-short) var(--ease-standard);
+  }
+
+  .m3-multibrowse-viewport {
+    margin-inline-start: calc(var(--carousel-leading-space) * -1);
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+    overscroll-behavior-inline: contain;
+  }
+
+  .m3-multibrowse-viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .m3-multibrowse-track {
+    width: 100%;
+    min-width: min-content;
+    box-sizing: border-box;
+    height: var(--carousel-compact-height);
+    gap: var(--carousel-between-space);
+    padding: 8px 0 8px var(--carousel-leading-space);
+    touch-action: pan-y;
+  }
+
+  .m3-multibrowse-item {
+    flex: 1 1 0;
+    height: var(--carousel-compact-item-height);
+    min-width: var(--carousel-minimum-item-width);
+    max-width: calc(var(--carousel-compact-large-width) - var(--space-2xs));
+    scroll-snap-align: center;
+  }
+
+  .m3-multibrowse-item[data-distance='0'] {
+    flex: 0 0 var(--carousel-compact-large-width) !important;
+    max-width: var(--carousel-compact-large-width);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .m3-button:hover {
+      box-shadow: var(--elevation-button-hover);
+    }
+  }
+
+  @media (min-width: 37.5rem) {
+    .m3-section-title {
+      font-size: var(--type-display-medium-size);
+      line-height: var(--type-display-medium-line);
+    }
+
+    .m3-multibrowse-track {
+      height: var(--carousel-medium-height);
+    }
+
+    .m3-multibrowse-item {
+      height: var(--carousel-medium-item-height);
+      max-width: calc(var(--carousel-medium-large-width) - var(--space-2xs));
+    }
+
+    .m3-multibrowse-item[data-distance='0'] {
+      flex-basis: var(--carousel-medium-large-width) !important;
+      max-width: var(--carousel-medium-large-width);
+    }
+  }
+
+  @media (min-width: 60rem) {
+    .m3-display-emphasized {
+      font-size: var(--type-display-large-size);
+      line-height: var(--type-display-large-line);
+    }
+
+    .m3-headline-emphasized {
+      font-size: var(--type-display-small-size);
+      line-height: var(--type-display-small-line);
+    }
+
+    .m3-section-title {
+      font-size: var(--type-display-large-size);
+      line-height: var(--type-display-large-line);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* CSS scroll-snap은 걷어냈다. 스냅 지점이 한 화면씩 떨어져 있으면 proximity가
+   임계값을 넘지 못해 실제로 붙지 않았고(측정: 진행률 0.18에 그대로 착지),
+   mandatory는 스냅 대상이 없는 아래 본문에서 스크롤을 갇히게 한다.
+   히어로는 진행률을 단계로 양자화해서 스냅한다 — HeroBracket 참고. */
+
+/* 트랙 높이는 .hero-snap 여유들이 만든다(개수·높이가 컴포넌트 한 곳에만 있다).
+   조리개는 스크롤 진행률로 열리므로 JS가 없거나 축소 모션이면 열리지 않고,
+   그러면 여유를 잡아둘 이유도 없다 — 접으면 트랙이 한 화면으로 줄고
+   브래킷은 닫힌 원본 마크로 남는다. 슬로건 전문은 그 아래 그대로 읽힌다. */
+@media (prefers-reduced-motion: reduce), (scripting: none) {
+  .hero-snap {
+    display: none;
   }
 }

@@ -1,0 +1,78 @@
+/* Material 3 role tokens · KU green anchor · GDG supporting colours */
+:root {
+  /* M3 colour roles. Values reuse the project's already-audited OKLCH palette. */
+  --color-primary: oklch(47.9% 0.119 155);
+  --color-on-primary: oklch(97% 0.008 155);
+  --color-secondary: oklch(63% 0.18 260);
+  --color-on-secondary: oklch(20% 0.012 155);
+  --color-secondary-container: oklch(90.923% 0.035592 147.872); /* #d2e8d4 */
+  --color-on-secondary-container: oklch(21.935% 0.033772 153.53); /* #0d1f13 */
+  --color-tertiary: oklch(79.6% 0.167 76);
+  --color-on-tertiary: oklch(20% 0.012 155);
+  --color-surface: oklch(97% 0.008 155);
+  --color-surface-container-low: oklch(94% 0.01 155);
+  --color-surface-container: oklch(91% 0.012 155);
+  --color-surface-container-high: oklch(91% 0.012 155);
+  --color-on-surface: oklch(20% 0.012 155);
+  --color-on-surface-variant: oklch(42% 0.012 155);
+  --color-outline: oklch(80% 0.012 155);
+  --color-outline-variant: oklch(86% 0.01 155);
+  --color-shadow: oklch(20% 0.012 155);
+
+  /* M3 Typography page: Baseline and Emphasis pairs used outside the hero. */
+  --type-display-large-size: 3.5625rem;
+  --type-display-large-line: 4rem;
+  --type-display-medium-size: 2.8125rem;
+  --type-display-medium-line: 3.25rem;
+  --type-display-small-size: 2.25rem;
+  --type-display-small-line: 2.75rem;
+  --type-headline-large-size: 2rem;
+  --type-headline-large-line: 2.5rem;
+  --type-headline-medium-size: 1.75rem;
+  --type-headline-medium-line: 2.25rem;
+  --type-title-large-size: 1.375rem;
+  --type-title-large-line: 1.75rem;
+  --type-title-medium-size: 1rem;
+  --type-title-medium-line: 1.5rem;
+  --type-body-large-size: 1rem;
+  --type-body-large-line: 1.5rem;
+  --type-body-medium-size: 0.875rem;
+  --type-body-medium-line: 1.25rem;
+  --type-label-large-size: 0.875rem;
+  --type-label-large-line: 1.25rem;
+  --type-weight-baseline: 400;
+  --type-weight-emphasis: 500;
+
+  --space-3xs: 0.125rem;
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --space-4xl: 9rem;
+
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+
+  /* Page-specific floating action bar: one restrained elevation layer. */
+  --elevation-floating-bar: 0 4px 12px
+    color-mix(in oklch, var(--color-shadow) 18%, transparent);
+  --elevation-button-hover: 0 1px 2px
+    color-mix(in oklch, var(--color-shadow) 30%, transparent);
+
+  /* Material 3 Design Kit · Carousel · Multi-browse. */
+  --carousel-leading-space: 16px;
+  --carousel-between-space: 8px;
+  --carousel-compact-height: 221px;
+  --carousel-compact-item-height: 205px;
+  --carousel-compact-large-width: 176px;
+  --carousel-medium-large-width: 268px;
+  --carousel-minimum-item-width: 44px;
+  --carousel-medium-viewport: 600px;
+  --carousel-medium-height: 220px;
+  --carousel-medium-item-height: 204px;
+}
