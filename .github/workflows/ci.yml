@@ -9,9 +9,9 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           # node --test로 .ts를 직접 실행하려면 네이티브 TS 지원이 필요하다
           node-version: '24'
@@ -40,3 +40,79 @@ jobs:
       # 테마 변수를 pruning해 stage 배경이 투명해진 사고를 막는 게이트다.
       - name: 토큰 emit 게이트
         run: yarn check:tokens:emitted
+
+  # Vercel GitHub App 대신 CLI로 배포한다.
+  #
+  # 앱 설치는 레포 권한이 아니라 org 레벨 권한이라, 레포 admin이어도 org owner가
+  # 아니면 요청만 보낼 수 있다(레포 선택 목록에 request 배지가 뜬다).
+  # 반면 여기 쓰는 secret 세 개는 레포 레벨이라 레포 admin이 직접 넣을 수 있다.
+  # 결과는 앱 연동과 같다: main 푸시는 프로덕션, PR은 프리뷰.
+  #
+  # 필요한 레포 secret (Settings → Secrets and variables → Actions):
+  #   VERCEL_TOKEN      — Vercel 계정 토큰 (Account Settings → Tokens)
+  #   VERCEL_ORG_ID     — vercel link 후 .vercel/project.json의 orgId
+  #   VERCEL_PROJECT_ID — 같은 파일의 projectId
+  #
+  # NEXT_PUBLIC_GA_ID는 여기 넣지 않는다. vercel pull이 Vercel 프로젝트의
+  # 환경변수를 그대로 가져오므로 Vercel 쪽에만 등록하면 된다.
+  #
+  # secrets 컨텍스트는 job-level if에서 읽을 수 없다. 그래서 step에서 한 번
+  # 읽어 output으로 내보내고, deploy가 그것을 조건으로 쓴다.
+  # secret이 등록되기 전에도 main이 빨갛게 되지 않도록 하는 가드다.
+  secrets-ready:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - id: check
+        run: echo "ready=${{ secrets.VERCEL_TOKEN != '' }}" >> "$GITHUB_OUTPUT"
+
+  # needs: verify — 게이트가 통과하지 않으면 배포하지 않는다.
+  deploy:
+    needs: [verify, secrets-ready]
+    runs-on: ubuntu-latest
+    # 포크에서 온 PR에는 secret이 주어지지 않는다. 실패로 보이지 않게 건너뛴다.
+    if: >-
+      needs.secrets-ready.outputs.ready == 'true' &&
+      (github.event_name == 'push' ||
+       github.event.pull_request.head.repo.full_name == github.repository)
+    environment:
+      name: ${{ github.event_name == 'push' && 'production' || 'preview' }}
+      url: ${{ steps.deploy.outputs.url }}
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      # push는 프로덕션, PR은 프리뷰. 아래 세 단계가 같은 값을 봐야 한다.
+      TARGET: ${{ github.event_name == 'push' && 'production' || 'preview' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - run: npm install --global vercel@latest
+
+      - name: Vercel 환경 가져오기
+        run: vercel pull --yes --environment=$TARGET --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: 빌드
+        run: |
+          if [ "$TARGET" = "production" ]; then
+            vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+          else
+            vercel build --token=${{ secrets.VERCEL_TOKEN }}
+          fi
+
+      # --prebuilt: 방금 만든 산출물을 올린다. Vercel이 다시 빌드하지 않으므로
+      # 배포되는 것이 게이트를 통과한 그 빌드와 동일하다.
+      - name: 배포
+        id: deploy
+        run: |
+          if [ "$TARGET" = "production" ]; then
+            url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          else
+            url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "배포됨: $url"
