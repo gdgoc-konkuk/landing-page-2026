@@ -7,21 +7,17 @@ import { ShapeDefs } from './_components/stage/Shape';
 import Footer from './_components/footer/Footer';
 import { RECRUIT } from '@/config/recruit.config';
 import { STAGES } from '@/config/stages.config';
-import {
-  resolveRecruitState,
-  daysLeft,
-  formatDeadline,
-} from '@/lib/recruit';
+import { resolveRecruitState, msLeft } from '@/lib/recruit';
 
 // 상태 판정이 빌드 시점에 굳지 않도록 주기적으로 재생성한다.
-// 모집 기간에는 1시간이다. 하루로 두면 마감 당일에 이미 닫혔는데도
-// "마감까지 1일"이 최대 하루 동안 남아 있을 수 있다.
+// 카운트다운 자체는 클라이언트가 매초 다시 재므로 캐시가 흔들려도 되지만,
+// open/closing/closed 판정은 서버 렌더 값이라 1시간마다 갱신한다.
 export const revalidate = 3600;
 
 export default function Home() {
   const now = new Date();
   const state = resolveRecruitState(RECRUIT, now);
-  const left = daysLeft(RECRUIT, now);
+  const left = msLeft(RECRUIT, now);
 
   return (
     <>
@@ -29,14 +25,14 @@ export default function Home() {
       <ShapeDefs shapes={STAGES.map((s) => s.shape)} />
       <NavBar />
       <main>
-        <Hero state={state} daysLeft={left} />
+        <Hero state={state} msLeft={left} />
         <IntroSection />
         {STAGES.map((stage, i) => (
           <Stage key={stage.slug} data={stage} index={i} />
         ))}
       </main>
       <Footer />
-      <RecruitToolbar state={state} deadline={formatDeadline(left)} />
+      <RecruitToolbar state={state} msLeft={left} />
     </>
   );
 }
