@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   resolveRecruitState,
-  daysLeft,
+  msLeft,
   formatDeadline,
 } from './recruit.ts';
 import type { RecruitConfig } from '../config/recruit.config.ts';
@@ -41,12 +41,12 @@ test('마감 한참 뒤도 closed — 죽은 경로가 생기지 않는다', () 
   assert.equal(resolveRecruitState(CFG, at('2027-03-01T00:00:00+09:00')), 'closed');
 });
 
-test('daysLeft는 모집 중에만 값을 준다', () => {
-  assert.equal(daysLeft(CFG, at('2026-09-14T00:00:00+09:00')), 1);
-  assert.equal(daysLeft(CFG, at('2026-09-13T00:00:00+09:00')), 2);
-  assert.equal(daysLeft(CFG, at('2026-09-15T00:00:00+09:00')), null);
+test('msLeft는 모집 중에만 값을 준다', () => {
+  assert.equal(msLeft(CFG, at('2026-09-14T23:59:49+09:00')), 10_000);
+  assert.equal(msLeft(CFG, at('2026-09-14T00:00:00+09:00')), 86_399_000);
+  assert.equal(msLeft(CFG, at('2026-09-15T00:00:00+09:00')), null);
   // 시작 게이팅이 없으므로 마감 전이면 항상 값이 있다
-  assert.equal(daysLeft(CFG, at('2026-08-01T00:00:00+09:00')), 45);
+  assert.equal(msLeft(CFG, at('2026-08-01T00:00:00+09:00')) !== null, true);
 });
 
 test('closingWindowDays가 0이면 closing 상태가 없다', () => {
@@ -68,12 +68,18 @@ test('now가 NaN으로 만든 Invalid Date이면 closed', () => {
   assert.equal(resolveRecruitState(CFG, new Date(NaN)), 'closed');
 });
 
-test('daysLeft는 now가 Invalid Date이면 null을 반환한다 (NaN이 아니다)', () => {
-  assert.equal(daysLeft(CFG, new Date('garbage')), null);
+test('msLeft는 now가 Invalid Date이면 null을 반환한다 (NaN이 아니다)', () => {
+  assert.equal(msLeft(CFG, new Date('garbage')), null);
 });
 
-test('formatDeadline은 무엇의 마감인지 밝힌다', () => {
+test('formatDeadline은 하루 밑으로 내려가면 일수를 뗀다', () => {
   assert.equal(formatDeadline(null), null);
-  assert.equal(formatDeadline(0), '오늘 모집 마감');
-  assert.equal(formatDeadline(3), '모집 마감까지 3일');
+  assert.equal(formatDeadline(0), '모집 마감');
+  assert.equal(formatDeadline(1_000), '모집 마감까지 00:00:01');
+  assert.equal(formatDeadline(61_000), '모집 마감까지 00:01:01');
+  assert.equal(formatDeadline(3_723_400), '모집 마감까지 01:02:03');
+  // 하루 경계: 24:00:00은 "1일 00:00:00", 1초 뒤엔 일수가 사라진다
+  assert.equal(formatDeadline(86_400_000), '모집 마감까지 1일 00:00:00');
+  assert.equal(formatDeadline(86_399_000), '모집 마감까지 23:59:59');
+  assert.equal(formatDeadline(90_061_000), '모집 마감까지 1일 01:01:01');
 });

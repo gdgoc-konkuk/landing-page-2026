@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Chip from '../ui/Chip';
 import { useHeroPassed } from '@/lib/useHeroPassed';
+import { useCountdown } from '@/lib/useCountdown';
 import { RECRUIT } from '@/config/recruit.config';
 import { isRecruiting, type RecruitState } from '@/lib/recruit';
 
@@ -16,12 +16,13 @@ import { isRecruiting, type RecruitState } from '@/lib/recruit';
  */
 export default function RecruitToolbar({
   state,
-  deadline,
+  msLeft,
 }: {
   state: RecruitState;
-  deadline: string | null;
+  msLeft: number | null;
 }) {
   const passed = useHeroPassed();
+  const deadline = useCountdown(RECRUIT.closesAt, msLeft);
 
   if (!isRecruiting(state)) return null;
 
@@ -45,7 +46,7 @@ export default function RecruitToolbar({
         className="recruit-toolbar-pill bg-secondary-container text-accent pointer-events-auto flex h-14 min-w-0 items-center px-5"
         style={{ borderRadius: 'var(--radius-full)' }}
       >
-        <span className="m3-body-medium text-on-surface-variant truncate whitespace-nowrap">
+        <span className="m3-body-medium text-on-surface-variant truncate whitespace-nowrap tabular-nums">
           {deadlineLabel}
         </span>
       </div>

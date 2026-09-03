@@ -21,6 +21,7 @@ import Chip from '../ui/Chip';
 import { BRACKET_LEFT, BRACKET_RIGHT, BRACKET_VIEWBOX } from '@/lib/bracket';
 import { lerpPoints, resampleByAngle, toPath, type Pt } from '@/lib/morph';
 import { shapePath, type ShapeName } from '@/lib/shapes';
+import { useCountdown } from '@/lib/useCountdown';
 import type { RecruitState } from '@/lib/recruit';
 
 const STEPS = [
@@ -73,7 +74,8 @@ const LETTER_VARIANTS: Variants = {
 
 interface HeroTickerProps {
   lede: string;
-  deadline: string | null;
+  closesAt: string;
+  msLeft: number | null;
   ctaLabel: string | null;
   ctaHref: string;
   state: RecruitState;
@@ -85,11 +87,13 @@ interface HeroTickerProps {
  */
 export default function HeroTicker({
   lede,
-  deadline,
+  closesAt,
+  msLeft,
   ctaLabel,
   ctaHref,
   state,
 }: HeroTickerProps) {
+  const deadline = useCountdown(closesAt, msLeft);
   const [{ active, previous }, setStep] = useState({ active: 0, previous: 0 });
   const [pageHidden, setPageHidden] = useState(false);
   const [interactionPaused, setInteractionPaused] = useState(false);
@@ -206,7 +210,7 @@ export default function HeroTicker({
                 className="hero-recruit-pill bg-surface-container-high text-on-surface flex h-14 min-w-0 items-center px-5"
                 style={{ borderRadius: 'var(--radius-full)' }}
               >
-                <span className="m3-body-medium text-on-surface-variant truncate whitespace-nowrap">
+                <span className="m3-body-medium text-on-surface-variant truncate whitespace-nowrap tabular-nums">
                   {deadline}
                 </span>
               </div>

@@ -28,14 +28,13 @@ export function resolveRecruitState(
 }
 
 /**
- * 마감까지 남은 일수(올림). 모집 중이 아니면 null.
- * 올림이므로 "1일 남음"은 마지막 24시간을 뜻한다.
+ * 마감까지 남은 밀리초. 모집 중이 아니면 null.
+ * 초 단위 카운트다운의 단일 소스다 — 서버 첫 페인트와 클라이언트 틱이 같은 식을 쓴다.
  */
-export function daysLeft(config: RecruitConfig, now: Date): number | null {
+export function msLeft(config: RecruitConfig, now: Date): number | null {
   const state = resolveRecruitState(config, now);
-  if (state !== 'open' && state !== 'closing') return null;
-  const remaining = new Date(config.closesAt).getTime() - now.getTime();
-  return Math.max(0, Math.ceil(remaining / DAY_MS));
+  if (!isRecruiting(state)) return null;
+  return Math.max(0, new Date(config.closesAt).getTime() - now.getTime());
 }
 
 /** 모집 CTA를 보여줄 상태인지. */
@@ -43,8 +42,19 @@ export function isRecruiting(state: RecruitState): boolean {
   return state === 'open' || state === 'closing';
 }
 
-/** 마감 안내 문구. 0일은 "오늘 마감"으로 표현한다 — "0일 남음"은 틀린 말처럼 읽힌다. */
-export function formatDeadline(days: number | null): string | null {
-  if (days === null) return null;
-  return days === 0 ? '오늘 모집 마감' : `모집 마감까지 ${days}일`;
+/**
+ * 마감 안내 문구. 하루 이상 남았으면 "N일 hh:mm:ss", 하루 밑으로 내려가면 "hh:mm:ss"다.
+ * 일수가 빠지는 순간 hh는 23 이하이므로 시가 24를 넘는 표기는 생기지 않는다.
+ * 0이 되는 순간은 '모집 마감'으로 갈음한다.
+ */
+export function formatDeadline(ms: number | null): string | null {
+  if (ms === null) return null;
+  if (ms <= 0) return '모집 마감';
+  const total = Math.floor(ms / 1000);
+  const days = Math.floor(total / 86400);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const clock = `${pad(Math.floor(total / 3600) % 24)}:${pad(
+    Math.floor(total / 60) % 60
+  )}:${pad(total % 60)}`;
+  return `모집 마감까지 ${days > 0 ? `${days}일 ` : ''}${clock}`;
 }
